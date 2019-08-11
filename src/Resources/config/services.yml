@@ -1,0 +1,10 @@
+services:
+  Htpasswd\Security\HtpasswdProvider:
+    class: Htpasswd\Security\HtpasswdProvider
+    public: false
+    arguments:
+      - '%Htpasswd.path%'
+      - '%Htpasswd.roles%'
+  Htpasswd\Security\HtpasswdEncoder:
+    class: Htpasswd\Security\HtpasswdEncoder
+    public: false

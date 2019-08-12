@@ -1,6 +1,6 @@
 services:
-  Htpasswd\Security\HtpasswdProvider:
-    class: Htpasswd\Security\HtpasswdProvider
+  Htpasswd\Security\HtpasswdUserProvider:
+    class: Htpasswd\Security\HtpasswdUserProvider
     public: false
     arguments:
       - '%Htpasswd.path%'

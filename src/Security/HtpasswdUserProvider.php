@@ -2,27 +2,35 @@
 
 namespace Htpasswd\Security;
 
+use Htpasswd\Exception\RoleException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use function array_map;
+use function count;
 use function explode;
 use function file;
 use function get_class;
+use function preg_match;
+use function sprintf;
 use function strtolower;
 use function substr;
+use function trigger_error;
 use function trim;
 
 /**
- * The {@see \Htpasswd\Security\HtpasswdProvider} reads user from the
+ * The {@see \Htpasswd\Security\HtpasswdUserProvider} reads user from the
  * htpasswd file. The default location of the file is `%kernel.project_dir%/.htpasswd` but you can change
  * the directory or file path via the configuration parameter `Htpasswd.path`.
  *
  * Take a look at {@link http://httpd.apache.org/docs/current/misc/password_encryptions.html} to get more details
  * about the htpasswd file.
+ *
+ * @package Htpasswd
  */
-class HtpasswdProvider implements UserProviderInterface
+class HtpasswdUserProvider implements UserProviderInterface
 {
     /**
      * the path of the htpasswd file
@@ -45,7 +53,7 @@ class HtpasswdProvider implements UserProviderInterface
     protected $users = array();
 
     /**
-     * HtpasswdProvider constructor.
+     * HtpasswdUserProvider constructor.
      *
      * @param string   $path  the path of the htpasswd file
      *                        the path was checked in the extension, it exists and is readable
@@ -67,7 +75,7 @@ class HtpasswdProvider implements UserProviderInterface
     protected function readUsersFromFile()
     {
         // read line by line
-        foreach( file($this->path, FILE_SKIP_EMPTY_LINES) as $_line )
+        foreach( file($this->path, FILE_SKIP_EMPTY_LINES) as $_no => $_line )
         {
 
             $_line = trim($_line);
@@ -86,29 +94,71 @@ class HtpasswdProvider implements UserProviderInterface
             }
 
             // get user and (encrypted) password
-            list($_user, $_encryptedPassword, $_roles) = explode(':', $_line);
+            $_htaccessParts = explode(':', $_line);
 
-            $_roles = $this->normalizeRoles($_roles);
+            // no colon found, skip line with error
+            if( count($_htaccessParts) < 2 )
+            {
+                trigger_error(sprintf('Htpasswd: Not able to parse user and password in %s:%d', $this->path, $_no + 1));
+                continue 1;
+            }
+
+            // read user name and encrypted password from htpasswd file
+            $_userName          = $_htaccessParts[ 0 ];
+            $_encryptedPassword = $_htaccessParts[ 1 ];
+
+            // try to read roles
+            $_roles = array();
+            if( count($_htaccessParts) >= 3 )
+            {
+                $_roles = $this->normalizeRoles($_no, $_htaccessParts[ 2 ]);
+            }
 
             // and add to provider
-            $this->createUser($_user, $_encryptedPassword);
+            $this->createUser($_userName, $_encryptedPassword, $_roles);
         }
     }
 
-    protected function normalizeRoles(string $roles)
+    /**
+     * @param int    $lineNumber
+     * @param string $roles
+     *
+     * @return string[]
+     *
+     * @link https://symfony.com/doc/current/security.html#roles
+     */
+    protected function normalizeRoles(int $lineNumber, string $roles): array
     {
+        $roles = array_map('trim', explode(',', $roles));
+
+        foreach( $roles as $_role )
+        {
+
+            if( preg_match('/^\w+$/', $_role) !== 1 )
+            {
+                throw RoleException::createOneWordOnlyException($this->path, $lineNumber, $_role);
+            }
+
+            if( preg_match('/^ROLE_/', $_role) !== 1 )
+            {
+                throw RoleException::createStartWithRoleException($this->path, $lineNumber, $_role);
+            }
+        }
+
+        return array_unique($roles);
 
     }
 
     /**
      * Adds a new to the provider.
      *
-     * @param string $userName          the user name
-     * @param string $encryptedPassword the encrypted password hash
+     * @param string   $userName          the user name
+     * @param string   $encryptedPassword the encrypted password hash
+     * @param string[] $roles             an array with roles to assigne
      */
-    public function createUser(string $userName, string $encryptedPassword)
+    public function createUser(string $userName, string $encryptedPassword, array $roles = array())
     {
-        $this->users[ strtolower($userName) ] = new User($userName, $encryptedPassword, $this->roles);
+        $this->users[ strtolower($userName) ] = new User($userName, $encryptedPassword, empty($roles) ? $this->roles : $roles);
     }
 
     /**

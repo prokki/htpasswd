@@ -6,9 +6,9 @@ use Htpasswd\DependencyInjection\HtpasswdBundleExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class HtpasswdUserProviderBundle
+ * Class HtpasswdBundle
  *
- * @link http://httpd.apache.org/docs/current/misc/password_encryptions.html
+ * @package Htpasswd
  */
 class HtpasswdBundle extends Bundle
 {

@@ -16,7 +16,9 @@ use function sprintf;
 
 /**
  *
- * @link http://symfony.com/doc/current/bundles/extension.html
+ * @link    http://symfony.com/doc/current/bundles/extension.html
+ *
+ * @package Htpasswd
  */
 class HtpasswdBundleExtension extends Extension
 {

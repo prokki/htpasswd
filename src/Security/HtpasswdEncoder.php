@@ -34,6 +34,8 @@ use function substr;
  *
  * @link https://github.com/whitehat101/apr1-md5  the used implementation of the `apr1-md` algorithm
  *       https://www.php.net/manual/de/function.password-verify.php the `password_*` methods are used for the `crypt`/`bcrypt` hashes
+ *
+ * @package Htpasswd
  */
 class HtpasswdEncoder implements PasswordEncoderInterface
 {
@@ -44,7 +46,7 @@ class HtpasswdEncoder implements PasswordEncoderInterface
     const HASH_CRYPT_OR_PLAIN = '';
 
     /**
-     * Returns a password encrypted by `bcrypt` with costs 10.
+     * Returns a password encrypted by `bcrypt`.
      *
      * @param string      $raw   the raw user input/password
      * @param string|null $salt  [optional] a phrase to salt the password

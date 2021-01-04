@@ -3,8 +3,8 @@
 [![Latest Stable Version](https://poser.pugx.org/prokki/htpasswd/version)](https://packagist.org/packages/prokki/htpasswd)
 [![Total Downloads](https://poser.pugx.org/prokki/htpasswd/downloads)](https://packagist.org/packages/prokki/htpasswd)
 [![License](https://poser.pugx.org/prokki/htpasswd/license)](https://packagist.org/packages/prokki/htpasswd)
-[![PHP v7.3](https://img.shields.io/badge/PHP-%E2%89%A57%2E3-0044aa.svg)](https://www.php.net/manual/en/migration73.new-features.php)
-[![PHP v7.3](https://img.shields.io/badge/Symfony-%E2%89%A54-0044aa.svg)](https://symfony.com/)
+[![PHP v7.2](https://img.shields.io/badge/PHP-%E2%89%A57%2E2-0044aa.svg)](https://www.php.net/manual/en/migration72.new-features.php)
+[![Symfony 4](https://img.shields.io/badge/Symfony-%E2%89%A54-0044aa.svg)](https://symfony.com/)
 
 This symfony user provider reads user from the [htpasswd file](http://httpd.apache.org/docs/current/misc/password_encryptions.html).
 
@@ -31,7 +31,7 @@ http://httpd.apache.org/docs/current/misc/password_encryptions.html.
   
 ## Requirements
 
-The usage of [**PHP v7.3**](https://www.php.net/manual/en/migration73.new-features.php) 
+The usage of [**PHP v7.2**](https://www.php.net/manual/en/migration72.new-features.php) 
 and [**Symfony 4**](https://symfony.com/doc/4.0/setup.html) is obligatory.
 
 

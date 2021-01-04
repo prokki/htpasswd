@@ -168,4 +168,9 @@ class HtpasswdEncoder implements PasswordEncoderInterface
             // *nux = plain or crypt
             self::HASH_CRYPT_OR_PLAIN;
     }
+
+    public function needsRehash(string $encoded): bool
+    {
+        return false;
+    }
 }

@@ -5,7 +5,7 @@ namespace Htpasswd\Security;
 use Htpasswd\Exception\RoleException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\User\User;
+use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use function array_map;
@@ -15,8 +15,8 @@ use function file;
 use function get_class;
 use function preg_match;
 use function sprintf;
+use function str_starts_with;
 use function strtolower;
-use function substr;
 use function trigger_error;
 use function trim;
 
@@ -37,20 +37,21 @@ class HtpasswdUserProvider implements UserProviderInterface
      *
      * @var string
      */
-    protected $path = '';
+    protected string $path = '';
 
     /**
      * the default roles which will be assigned to each user
      *
      * @var string[]
      */
-    protected $roles = array();
-
+    protected array $roles = [];
 
     /**
-     * @var User[]
+     * all users read from .htaccess file
+     *
+     * @var array<string, InMemoryUser>
      */
-    protected $users = array();
+    protected array $users = [];
 
     /**
      * HtpasswdUserProvider constructor.
@@ -72,7 +73,7 @@ class HtpasswdUserProvider implements UserProviderInterface
      *
      * Prerequisites: Properties `path` and `roles` must be set.
      */
-    protected function readUsersFromFile()
+    protected function readUsersFromFile(): void
     {
         // read line by line
         foreach( file($this->path, FILE_SKIP_EMPTY_LINES) as $_no => $_line )
@@ -88,7 +89,7 @@ class HtpasswdUserProvider implements UserProviderInterface
 
             // ignore lines starting with #
             // https://httpd.apache.org/docs/2.4/configuring.html
-            if( substr($_line, 0, 1) === '#' )
+            if( str_starts_with($_line, '#') )
             {
                 continue 1;
             }
@@ -97,25 +98,25 @@ class HtpasswdUserProvider implements UserProviderInterface
             $_htaccessParts = explode(':', $_line);
 
             // no colon found, skip line with error
-            if( count($_htaccessParts) < 2 )
+            if( 2 > count($_htaccessParts) )
             {
                 trigger_error(sprintf('Htpasswd: Not able to parse user and password in %s:%d', $this->path, $_no + 1));
                 continue 1;
             }
 
-            // read user name and encrypted password from htpasswd file
-            $_userName          = $_htaccessParts[ 0 ];
+            // read username and encrypted password from htpasswd file
+            $_userIdentifier    = $_htaccessParts[ 0 ];
             $_encryptedPassword = $_htaccessParts[ 1 ];
 
             // try to read roles
-            $_roles = array();
+            $_roles = [];
             if( count($_htaccessParts) >= 3 )
             {
                 $_roles = $this->normalizeRoles($_no, $_htaccessParts[ 2 ]);
             }
 
             // and add to provider
-            $this->createUser($_userName, $_encryptedPassword, $_roles);
+            $this->createUser($_userIdentifier, $_encryptedPassword, $_roles);
         }
     }
 
@@ -156,63 +157,63 @@ class HtpasswdUserProvider implements UserProviderInterface
      * @param string   $encryptedPassword the encrypted password hash
      * @param string[] $roles             an array with roles to assigne
      */
-    public function createUser(string $userName, string $encryptedPassword, array $roles = array())
+    public function createUser(string $userName, string $encryptedPassword, array $roles = [])
     {
-        $this->users[ strtolower($userName) ] = new User($userName, $encryptedPassword, empty($roles) ? $this->roles : $roles);
+        $this->users[ strtolower($userName) ] = new InMemoryUser($userName, $encryptedPassword, empty($roles) ? $this->roles : $roles);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadUserByUsername($username)
+    public function loadUserByIdentifier(string $identifier): InMemoryUser
     {
-        $user = $this->getUser($username);
+        $user = $this->getUser($identifier);
 
-        return new User($user->getUsername(), $user->getPassword(), $user->getRoles(), $user->isEnabled(), $user->isAccountNonExpired(), $user->isCredentialsNonExpired(), $user->isAccountNonLocked());
+        return new InMemoryUser($user->getUserIdentifier(), $user->getPassword(), $user->getRoles(), $user->isEnabled());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): InMemoryUser
     {
-        if( !$user instanceof User )
+        if( !$user instanceof InMemoryUser )
         {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
         }
 
-        $storedUser = $this->getUser($user->getUsername());
+        $storedUser = $this->getUser($user->getUserIdentifier());
 
-        return new User($storedUser->getUsername(), $storedUser->getPassword(), $storedUser->getRoles(), $storedUser->isEnabled(), $storedUser->isAccountNonExpired(), $storedUser->isCredentialsNonExpired() && $storedUser->getPassword() === $user->getPassword(), $storedUser->isAccountNonLocked());
+        return new InMemoryUser($storedUser->getUserIdentifier(), $storedUser->getPassword(), $storedUser->getRoles(), $storedUser->isEnabled());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsClass($class)
+    public function supportsClass(string $class): bool
     {
-        return ( User::class === $class );
+        return ( InMemoryUser::class === $class );
     }
 
     /**
      * Returns the user by given username.
      *
-     * @param string $username The username
+     * @param string $userIdentifier the username
      *
-     * @return User
+     * @return InMemoryUser
      *
      * @throws UsernameNotFoundException if user whose given username does not exist
      */
-    private function getUser($username)
+    private function getUser(string $userIdentifier): InMemoryUser
     {
-        if( !isset($this->users[ strtolower($username) ]) )
+        if( !isset($this->users[ strtolower($userIdentifier) ]) )
         {
-            $ex = new UsernameNotFoundException(sprintf('User "%s" does not exist.', $username));
-            $ex->setUsername($username);
+            $exception = new UsernameNotFoundException(sprintf('User "%s" does not exist.', $userIdentifier));
+            $exception->setUserIdentifier($userIdentifier);
 
-            throw $ex;
+            throw $exception;
         }
 
-        return $this->users[ strtolower($username) ];
+        return $this->users[ strtolower($userIdentifier) ];
     }
 }

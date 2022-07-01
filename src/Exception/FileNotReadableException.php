@@ -1,6 +1,6 @@
 <?php
 
-namespace Htpasswd\Exception;
+namespace Prokki\Htpasswd\Exception;
 
 use Exception;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -9,7 +9,7 @@ use function sprintf;
 /**
  * Class FileNotReadableException
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class FileNotReadableException extends IOException
 {

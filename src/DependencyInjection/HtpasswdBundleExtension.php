@@ -1,9 +1,9 @@
 <?php
 
-namespace Htpasswd\DependencyInjection;
+namespace Prokki\Htpasswd\DependencyInjection;
 
-use Htpasswd\Exception\FileNotReadableException;
 use Exception;
+use Prokki\Htpasswd\Exception\FileNotReadableException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -18,7 +18,7 @@ use function sprintf;
  *
  * @link    http://symfony.com/doc/current/bundles/extension.html
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class HtpasswdBundleExtension extends Extension
 {

@@ -35,12 +35,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Htpasswd\\": "src/"
+            "Prokki\\Htpasswd\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Htpasswd\\Tests\\": "tests/"
+            "Prokki\\Htpasswd\\Tests\\": "tests/"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Htpasswd\Security;
+namespace Prokki\Htpasswd\Security;
 
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use WhiteHat101\Crypt\APR1_MD5;
@@ -15,7 +15,7 @@ use function strtoupper;
 use function substr;
 
 /**
- * The class {@see \Htpasswd\Security\HtpasswdEncoder} checks wether
+ * The class {@see \Prokki\Htpasswd\Security\HtpasswdEncoder} checks wether
  * the user has inserted the proper password.
  *
  * This class provides all encryption methods which are specified in the htpasswd specification,
@@ -35,7 +35,7 @@ use function substr;
  * @link    https://github.com/whitehat101/apr1-md5  the used implementation of the `apr1-md` algorithm
  *       https://www.php.net/manual/de/function.password-verify.php the `password_*` methods are used for the `crypt`/`bcrypt` hashes
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class HtpasswdEncoder implements PasswordHasherInterface
 {

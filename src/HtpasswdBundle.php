@@ -1,6 +1,6 @@
 <?php
 
-namespace Htpasswd;
+namespace Prokki\Htpasswd;
 
 use Prokki\Htpasswd\DependencyInjection\HtpasswdBundleExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * Class HtpasswdBundle
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class HtpasswdBundle extends Bundle
 {

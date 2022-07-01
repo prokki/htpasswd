@@ -1,13 +1,13 @@
 <?php
 
-namespace Htpasswd\Exception;
+namespace Prokki\Htpasswd\Exception;
 
 use function sprintf;
 
 /**
  * Class RoleException
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class RoleException extends \UnexpectedValueException
 {

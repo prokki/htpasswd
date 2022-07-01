@@ -1,6 +1,6 @@
 <?php
 
-namespace Htpasswd\DependencyInjection;
+namespace Prokki\Htpasswd\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 /**
  * Class Configuration
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class Configuration implements ConfigurationInterface
 {

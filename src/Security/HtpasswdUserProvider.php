@@ -1,8 +1,8 @@
 <?php
 
-namespace Htpasswd\Security;
+namespace Prokki\Htpasswd\Security;
 
-use Htpasswd\Exception\RoleException;
+use Prokki\Htpasswd\Exception\RoleException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\InMemoryUser;
@@ -21,14 +21,14 @@ use function trigger_error;
 use function trim;
 
 /**
- * The {@see \Htpasswd\Security\HtpasswdUserProvider} reads user from the
+ * The {@see \Prokki\Htpasswd\Security\HtpasswdUserProvider} reads user from the
  * htpasswd file. The default location of the file is `%kernel.project_dir%/.htpasswd` but you can change
  * the directory or file path via the configuration parameter `Htpasswd.path`.
  *
  * Take a look at {@link http://httpd.apache.org/docs/current/misc/password_encryptions.html} to get more details
  * about the htpasswd file.
  *
- * @package Htpasswd
+ * @package Prokki\Htpasswd
  */
 class HtpasswdUserProvider implements UserProviderInterface
 {

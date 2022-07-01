@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.0] - 2022-07-01
+
+### Changed
+- Updated to [Symfony v6](https://symfony.com/releases/6.0).
+
 ## [0.1] - 2021-01-04
 
 ### Added

@@ -3,8 +3,8 @@
 [![Latest Stable Version](https://poser.pugx.org/prokki/htpasswd/version)](https://packagist.org/packages/prokki/htpasswd)
 [![Total Downloads](https://poser.pugx.org/prokki/htpasswd/downloads)](https://packagist.org/packages/prokki/htpasswd)
 [![License](https://poser.pugx.org/prokki/htpasswd/license)](https://packagist.org/packages/prokki/htpasswd)
-[![PHP v7.2](https://img.shields.io/badge/PHP-%E2%89%A57%2E2-0044aa.svg)](https://www.php.net/manual/en/migration72.new-features.php)
-[![Symfony 4](https://img.shields.io/badge/Symfony-%E2%89%A54-0044aa.svg)](https://symfony.com/)
+[![PHP v8.0.2](https://img.shields.io/badge/PHP-%E2%89%A58%2E0%2E2-0044aa.svg)](https://www.php.net/manual/en/migration72.new-features.php)
+[![Symfony 6](https://img.shields.io/badge/Symfony-%E2%89%A56-0044aa.svg)](https://symfony.com/)
 
 This symfony user provider reads user from the [htpasswd file](http://httpd.apache.org/docs/current/misc/password_encryptions.html).
 
@@ -31,11 +31,8 @@ http://httpd.apache.org/docs/current/misc/password_encryptions.html.
   
 ## Requirements
 
-The usage of [**PHP v7.2**](https://www.php.net/manual/en/migration72.new-features.php) 
-and [**Symfony 4**](https://symfony.com/doc/4.0/setup.html) is obligatory.
-
-
-     
+The usage of [**PHP ≥ v8.0.2**](https://www.php.net/manual/en/migration80.php) 
+and [**Symfony ≥ 6**](https://symfony.com/doc/4.0/setup.html) is recommend.
 
 ## Integration & Basic Usage
 
@@ -44,10 +41,21 @@ and [**Symfony 4**](https://symfony.com/doc/4.0/setup.html) is obligatory.
 Please install via [composer](https://getcomposer.org/).
 
 ```bash
-composer require prokki/htpasswd "^0.0"
+composer require prokki/htpasswd
 ```
 
 The bundle will be automatically added to your `bundles.yaml` configuration.
+
+### Symfony v4, Symfony v5
+
+[**PHP v7.2**](https://www.php.net/manual/en/migration72.new-features.php)
+and [**Symfony 4**](https://symfony.com/doc/4.0/setup.html) is obligatory.
+
+To use an older version of Symfony/PHP please use version `0.*`
+
+```bash
+composer require prokki/htpasswd "~0.0"
+```
 
 ### Symfony Configuration
 
@@ -241,4 +249,3 @@ admin5:admin5
 ## Credits
 
 A big thank you to [https://github.com/whitehat101](https://github.com/whitehat101/apr1-md5) for the implementation of the `apr1-md5` algorithm.
- 

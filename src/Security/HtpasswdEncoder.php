@@ -2,7 +2,7 @@
 
 namespace Htpasswd\Security;
 
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use WhiteHat101\Crypt\APR1_MD5;
 use function base64_encode;
 use function hash;
@@ -32,12 +32,12 @@ use function substr;
  * PLAIN TEXT (i.e. unencrypted)
  *   Windows & Netware only. Insecure.
  *
- * @link https://github.com/whitehat101/apr1-md5  the used implementation of the `apr1-md` algorithm
+ * @link    https://github.com/whitehat101/apr1-md5  the used implementation of the `apr1-md` algorithm
  *       https://www.php.net/manual/de/function.password-verify.php the `password_*` methods are used for the `crypt`/`bcrypt` hashes
  *
  * @package Htpasswd
  */
-class HtpasswdEncoder implements PasswordEncoderInterface
+class HtpasswdEncoder implements PasswordHasherInterface
 {
     const HASH_PLAIN = '';
     const HASH_BCRYPT = '$2y$';
@@ -52,9 +52,9 @@ class HtpasswdEncoder implements PasswordEncoderInterface
      * @param string|null $salt  [optional] a phrase to salt the password
      * @param int         $costs [optional] the costs to encrypt the password between 1 and 31, default is 10
      *
-     * @return bool|string
+     * @return string|false|null
      */
-    public static function encodeBCRYPT(string $raw, ?string $salt = null, int $costs = 10)
+    public static function encodeBCRYPT(string $raw, ?string $salt = null, int $costs = 10): string|false|null
     {
         $options = ['costs' => $costs];
 
@@ -88,7 +88,7 @@ class HtpasswdEncoder implements PasswordEncoderInterface
      *
      * @return string
      */
-    public static function encodeSHA1(string $raw)
+    public static function encodeSHA1(string $raw): string
     {
         return sprintf('%s%s', self::HASH_SHA1, base64_encode(hash('sha1', $raw, true)));
     }
@@ -103,9 +103,9 @@ class HtpasswdEncoder implements PasswordEncoderInterface
      *
      * {@inheritDoc}
      */
-    public function encodePassword($raw, $salt)
+    public function hash(string $plainPassword): string
     {
-        return self::encodeMD5($raw, $salt);
+        return self::encodeMD5($plainPassword);
     }
 
     /**
@@ -113,25 +113,19 @@ class HtpasswdEncoder implements PasswordEncoderInterface
      *
      * {@inheritDoc}
      */
-    public function isPasswordValid($encoded, $raw, $salt)
+    public function verify(string $hashedPassword, string $plainPassword): bool
     {
         // select password check depending on the algorithm used to generate the $encoded phrase
-        switch( $this->getHashMethod($encoded) )
+        return match ( $this->getHashMethod($hashedPassword) )
         {
-            case self::HASH_BCRYPT:
-                return password_verify($raw, $encoded);
-            case self::HASH_MD5:
-                return APR1_MD5::check($raw, $encoded);
-                break;
-            case self::HASH_SHA1:
-                return hash_equals($encoded, $this->encodeSHA1($raw));
-            case self::HASH_CRYPT_OR_PLAIN:
-                return password_verify($raw, $encoded) || ( strcmp($encoded, $raw) === 0 );
-            case self::HASH_PLAIN:
-                return ( strcmp($encoded, $raw) === 0 );
-        }
+            self::HASH_BCRYPT         => password_verify($plainPassword, $hashedPassword),
+            self::HASH_MD5            => APR1_MD5::check($plainPassword, $hashedPassword),
+            self::HASH_SHA1           => hash_equals($hashedPassword, $this->encodeSHA1($plainPassword)),
+            self::HASH_CRYPT_OR_PLAIN => password_verify($plainPassword, $hashedPassword) || ( strcmp($hashedPassword, $plainPassword) === 0 ),
+            self::HASH_PLAIN          => ( strcmp($hashedPassword, $plainPassword) === 0 ),
+            default                   => false,
+        };
 
-        return false;
     }
 
     /**
@@ -169,7 +163,10 @@ class HtpasswdEncoder implements PasswordEncoderInterface
             self::HASH_CRYPT_OR_PLAIN;
     }
 
-    public function needsRehash(string $encoded): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function needsRehash(string $hashedPassword): bool
     {
         return false;
     }

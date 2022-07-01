@@ -16,21 +16,21 @@ class RoleException extends \UnexpectedValueException
      *
      * @var string
      */
-    protected $htpasswdPath = '';
+    protected string $htpasswdPath = '';
 
     /**
      * the line of the current exception inside the htpasswd file
      *
      * @var int
      */
-    protected $htpasswdLine = 0;
+    protected int $htpasswdLine = 0;
 
     /**
      * the parsed role
      *
      * @var string
      */
-    protected $htpasswdRole = '';
+    protected string $htpasswdRole = '';
 
     /**
      * Overrides {@see \Exception::__construct()} to pass the path, line no and the parsed role of the htpasswd file.
@@ -57,7 +57,7 @@ class RoleException extends \UnexpectedValueException
      *
      * @return self
      */
-    public static function createOneWordOnlyException(string $path, int $line, string $incorrectRole)
+    public static function createOneWordOnlyException(string $path, int $line, string $incorrectRole): self
     {
         $message = sprintf('Htpasswd: Each role must be exactly one word, found "%s" in %s:%d', $incorrectRole, $path, $line);
 
@@ -73,7 +73,7 @@ class RoleException extends \UnexpectedValueException
      *
      * @return self
      */
-    public static function createStartWithRoleException(string $path, int $line, string $incorrectRole)
+    public static function createStartWithRoleException(string $path, int $line, string $incorrectRole): self
     {
         $message = sprintf('Htpasswd: Each role must start with "ROLE_", found "%s" in %s:%d', $incorrectRole, $path, $line);
 

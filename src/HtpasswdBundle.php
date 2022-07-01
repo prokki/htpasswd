@@ -2,7 +2,8 @@
 
 namespace Htpasswd;
 
-use Htpasswd\DependencyInjection\HtpasswdBundleExtension;
+use Prokki\Htpasswd\DependencyInjection\HtpasswdBundleExtension;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -24,7 +25,7 @@ class HtpasswdBundle extends Bundle
     /**
      * {@inheritDoc}
      */
-    public function getContainerExtension()
+    public function getContainerExtension(): ?ExtensionInterface
     {
         return new HtpasswdBundleExtension();
     }
